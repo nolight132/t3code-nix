@@ -6,18 +6,19 @@
   outputs =
     { self, nixpkgs }:
     let
-      version = "0.0.42";
+      release = builtins.fromJSON (builtins.readFile ./sources.json);
+      inherit (release) version;
 
-      sources = {
-        x86_64-linux = {
-          arch = "x86_64";
-          hash = "sha256-jcH8zavC7TpZo5RMx3LvEZMbk1FAHAlj7TBdX5bjzfQ=";
-        };
-        aarch64-linux = {
-          arch = "arm64";
-          hash = "sha256-wlbYctNY6fLJEyiwFUxjEfousWOG7294j82hLXPPKDY=";
-        };
-      };
+      sources =
+        builtins.mapAttrs
+          (_: arch: {
+            inherit arch;
+            hash = release.hashes.${arch};
+          })
+          {
+            x86_64-linux = "x86_64";
+            aarch64-linux = "arm64";
+          };
 
       forAllSystems = nixpkgs.lib.genAttrs (builtins.attrNames sources);
 
