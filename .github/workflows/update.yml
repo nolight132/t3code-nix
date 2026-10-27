@@ -2,7 +2,7 @@ name: update
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 */6 * * *"
   workflow_dispatch:
 
 permissions:
@@ -17,12 +17,17 @@ jobs:
       - run: ./update.sh
         env:
           GH_TOKEN: ${{ github.token }}
-      - run: nix build .#t3code
+      - run: nix build .#t3code .#t3code-nightly
       - name: commit
         run: |
           git diff --quiet sources.json && exit 0
-          version=$(jq -r .version sources.json)
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -am "chore: update t3code to $version"
+          for channel in stable nightly; do
+            old=$(git show HEAD:sources.json | jq -r --arg c "$channel" '.[$c].version // .version')
+            new=$(jq -r --arg c "$channel" '.[$c].version' sources.json)
+            [ "$old" = "$new" ] && continue
+            changes+=("$channel to $new")
+          done
+          git commit -am "chore: update t3code $(IFS=,; echo "${changes[*]}" | sed 's/,/, /g')"
           git push

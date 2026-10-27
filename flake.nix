@@ -6,32 +6,28 @@
   outputs =
     { self, nixpkgs }:
     let
-      release = builtins.fromJSON (builtins.readFile ./sources.json);
-      inherit (release) version;
+      releases = builtins.fromJSON (builtins.readFile ./sources.json);
 
-      sources =
-        builtins.mapAttrs
-          (_: arch: {
-            inherit arch;
-            hash = release.hashes.${arch};
-          })
-          {
-            x86_64-linux = "x86_64";
-            aarch64-linux = "arm64";
-          };
+      arches = {
+        x86_64-linux = "x86_64";
+        aarch64-linux = "arm64";
+      };
 
-      forAllSystems = nixpkgs.lib.genAttrs (builtins.attrNames sources);
+      systems = builtins.attrNames arches;
+      forAllSystems = nixpkgs.lib.genAttrs systems;
 
+      # Builds one release channel ("stable" or "nightly") from its entry in sources.json.
       mkT3code =
-        pkgs:
+        pkgs: channel:
         let
           inherit (pkgs) lib appimageTools fetchurl;
-          pname = "t3code";
-          source = sources.${pkgs.stdenv.hostPlatform.system};
+          inherit (releases.${channel}) version hashes;
+          pname = if channel == "stable" then "t3code" else "t3code-${channel}";
+          arch = arches.${pkgs.stdenv.hostPlatform.system};
 
           src = fetchurl {
-            url = "https://github.com/pingdotgg/t3code/releases/download/v${version}/T3-Code-${version}-${source.arch}.AppImage";
-            inherit (source) hash;
+            url = "https://github.com/pingdotgg/t3code/releases/download/v${version}/T3-Code-${version}-${arch}.AppImage";
+            hash = hashes.${arch};
           };
 
           contents = appimageTools.extract { inherit pname version src; };
@@ -42,11 +38,13 @@
           extraPkgs = pkgs: [ pkgs.libsecret ];
 
           extraInstallCommands = ''
-            install -Dm444 ${contents}/t3code.desktop $out/share/applications/t3code.desktop
-            substituteInPlace $out/share/applications/t3code.desktop \
-              --replace-fail 'Exec=AppRun %U' 'Exec=t3code %U'
+            install -Dm444 ${contents}/t3code.desktop $out/share/applications/${pname}.desktop
+            substituteInPlace $out/share/applications/${pname}.desktop \
+              --replace-fail 'Exec=AppRun %U' 'Exec=${pname} %U'
             cp -r ${contents}/usr/share/icons $out/share/
           '';
+
+          passthru = { inherit contents; };
 
           meta = {
             description = "Minimal web GUI for coding agents";
@@ -54,8 +52,8 @@
             changelog = "https://github.com/pingdotgg/t3code/releases/tag/v${version}";
             license = lib.licenses.mit;
             sourceProvenance = [ lib.sourceTypes.binaryNativeCode ];
-            mainProgram = "t3code";
-            platforms = builtins.attrNames sources;
+            mainProgram = pname;
+            platforms = systems;
           };
         };
     in
@@ -63,16 +61,18 @@
       packages = forAllSystems (
         system:
         let
-          t3code = mkT3code nixpkgs.legacyPackages.${system};
+          pkgs = nixpkgs.legacyPackages.${system};
         in
-        {
-          inherit t3code;
+        rec {
+          t3code = mkT3code pkgs "stable";
+          t3code-nightly = mkT3code pkgs "nightly";
           default = t3code;
         }
       );
 
       overlays.default = final: _prev: {
-        t3code = mkT3code final;
+        t3code = mkT3code final "stable";
+        t3code-nightly = mkT3code final "nightly";
       };
     };
 }
