@@ -1,16 +1,16 @@
 {
   "stable": {
-    "version": "0.1.5",
+    "version": "0.1.6",
     "hashes": {
-      "x86_64": "sha256-kz/53ExlCnWqQIfJjyrmxlQMIz8OL+sy6/+VCwm+hJ0=",
-      "arm64": "sha256-KtjGrc3LwhB/9FVdFJoKkaWddkh1NlxXxotPgnJTdoI="
+      "x86_64": "sha256-CeJQcgjHeTCbOWvoRq6h2UUUS9eAYGiZwvSByW3fNNA=",
+      "arm64": "sha256-vbLlYFDIPVOoCSNGZJlVNrqGVQAJq5rm+2xxfRSaMQY="
     }
   },
   "nightly": {
-    "version": "0.1.6-nightly.20261031.3956",
+    "version": "0.1.6-nightly.20261031.3977",
     "hashes": {
-      "x86_64": "sha256-9BUUyqLqRLIwlq5B7zgamWAJzDY1YfNYSh+ssPiSybc=",
-      "arm64": "sha256-2xaHK6RU/sheet6G3GJVcOUsW5LqxAXLerbXeT0t5ro="
+      "x86_64": "sha256-dZmCrgCAaeJtnWqN04Dq4bGeu0X+Ww9vF1HB5eXOGM8=",
+      "arm64": "sha256-sLB9XnMwRYDE9j3NK90Sv+ecf/meEoYGBA9MPXaTbj0="
     }
   }
 }
