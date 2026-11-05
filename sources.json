@@ -7,10 +7,10 @@
     }
   },
   "nightly": {
-    "version": "0.1.8-nightly.20261104.4192",
+    "version": "0.1.8-nightly.20261105.4205",
     "hashes": {
-      "x86_64": "sha256-QcxV2pbwihwR/KQXMgKNJ/4ByvMCBrP7DMPRW9V6cU0=",
-      "arm64": "sha256-9l9Hm27ZQBw/tGVG4NJJW3DPSwylBinBx2hqeEd28Kc="
+      "x86_64": "sha256-+8XrsLrkltOw5+EwBDVEAZ1GumciFPIz9A/GXC+6JH0=",
+      "arm64": "sha256-c3X+VIXLA7sFHdEHBaT0DX8S8uMwWvaBrFmGAD+gjxo="
     }
   }
 }
