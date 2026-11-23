@@ -4,19 +4,26 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 # Prints the sources.json entry for one release object read from stdin.
+# AppImages are matched by their architecture suffix because upstream has named them both
+# T3-Code-<version>-<arch>.AppImage and T3-Code[-Nightly]-<arch>.AppImage.
 entry() {
-  local release tag version sri digest arch
+  local release tag version asset digest arch
   release=$(cat)
   tag=$(jq -r .tag_name <<<"$release")
   version=${tag#v}
-  local -A hashes
+  local -A urls hashes
   for arch in x86_64 arm64; do
-    digest=$(jq -r --arg n "T3-Code-$version-$arch.AppImage" '.assets[] | select(.name == $n) | .digest' <<<"$release")
-    [[ $digest == sha256:* ]] || { echo "no digest for $arch in $tag" >&2; exit 1; }
+    asset=$(jq -c --arg suffix "-$arch.AppImage" \
+      '[.assets[] | select((.name | startswith("T3-Code-")) and (.name | endswith($suffix)))] | first' <<<"$release")
+    digest=$(jq -r '.digest // empty' <<<"$asset")
+    [[ $digest == sha256:* ]] || { echo "no AppImage digest for $arch in $tag" >&2; exit 1; }
+    urls[$arch]=$(jq -r .browser_download_url <<<"$asset")
     hashes[$arch]=$(nix hash convert --hash-algo sha256 --to sri "${digest#sha256:}")
   done
-  jq -n --arg v "$version" --arg x "${hashes[x86_64]}" --arg a "${hashes[arm64]}" \
-    '{version: $v, hashes: {x86_64: $x, arm64: $a}}'
+  jq -n --arg v "$version" \
+    --arg xu "${urls[x86_64]}" --arg xh "${hashes[x86_64]}" \
+    --arg au "${urls[arm64]}" --arg ah "${hashes[arm64]}" \
+    '{version: $v, sources: {x86_64: {url: $xu, hash: $xh}, arm64: {url: $au, hash: $ah}}}'
 }
 
 stable=$(gh api repos/pingdotgg/t3code/releases/latest | entry)

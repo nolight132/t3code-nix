@@ -1,16 +1,28 @@
 {
   "stable": {
-    "version": "0.1.9",
-    "hashes": {
-      "x86_64": "sha256-0KtW3z4zjyQoSENWISl/2WOjNxWw2CCNvwg5lllXLYE=",
-      "arm64": "sha256-m8HIZp01uUgP3v1lHE/L4eDea+FLSlBorst2MfCPCPU="
+    "version": "0.1.11",
+    "sources": {
+      "x86_64": {
+        "url": "https://github.com/pingdotgg/t3code/releases/download/v0.1.11/T3-Code-x86_64.AppImage",
+        "hash": "sha256-i6oGp7uqP3KdaUZvshHtcAbWpuTYALns2s2DH9FoaxQ="
+      },
+      "arm64": {
+        "url": "https://github.com/pingdotgg/t3code/releases/download/v0.1.11/T3-Code-arm64.AppImage",
+        "hash": "sha256-Pa+IzPF1SLwp/4pueOIl3vBpa0RJjF9QBXBI4YLxRiY="
+      }
     }
   },
   "nightly": {
-    "version": "0.1.10-nightly.20261113.4630",
-    "hashes": {
-      "x86_64": "sha256-tZVN1ytnAtjtXUGWcrKnwiGB7Pmz08Tr4jp1Bo93aOI=",
-      "arm64": "sha256-DzZvWzyHIubcbXQgkChlzuJP435fKAH9sR7yODEn8CU="
+    "version": "0.1.12-nightly.20261123.5151",
+    "sources": {
+      "x86_64": {
+        "url": "https://github.com/pingdotgg/t3code/releases/download/v0.1.12-nightly.20261123.5151/T3-Code-Nightly-x86_64.AppImage",
+        "hash": "sha256-ApvrN8dgBvjmYAOiUBt6bLFNx+RGMBL2eUmWGhpxDgk="
+      },
+      "arm64": {
+        "url": "https://github.com/pingdotgg/t3code/releases/download/v0.1.12-nightly.20261123.5151/T3-Code-Nightly-arm64.AppImage",
+        "hash": "sha256-kREDFH3i3L/bMXF7W160nvNrN9QCYngDMCSCbJEK7k4="
+      }
     }
   }
 }

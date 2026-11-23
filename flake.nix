@@ -21,14 +21,11 @@
         pkgs: channel:
         let
           inherit (pkgs) lib appimageTools fetchurl;
-          inherit (releases.${channel}) version hashes;
+          inherit (releases.${channel}) version sources;
           pname = if channel == "stable" then "t3code" else "t3code-${channel}";
           arch = arches.${pkgs.stdenv.hostPlatform.system};
 
-          src = fetchurl {
-            url = "https://github.com/pingdotgg/t3code/releases/download/v${version}/T3-Code-${version}-${arch}.AppImage";
-            hash = hashes.${arch};
-          };
+          src = fetchurl { inherit (sources.${arch}) url hash; };
 
           contents = appimageTools.extract { inherit pname version src; };
         in
